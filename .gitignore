@@ -1,0 +1,32 @@
+# Node.js
+node_modules
+.env
+
+# React
+client/build
+client/.env.local
+client/.env.development.local
+client/.env.test.local
+client/.env.production.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS generated files
+.DS_Store
+.Trashes
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Dependency directories
+client/node_modules/
+server/node_modules/
+
+# Package-lock.json (optional, depending on project preference)
+# package-lock.json
