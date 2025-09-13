@@ -7,14 +7,11 @@ const router = express.Router();
 router.post(
     '/register',
     [
-        check('name', 'Name is required').not().isEmpty(),
-        check('idNumber', 'ID Number is required').not().isEmpty(),
-        check('idNumber', 'ID Number must be 13 digits').isLength({ min: 13, max: 13 }),
-        check('accountNumber', 'Account Number is required').not().isEmpty(),
-        check('accountNumber', 'Account Number must be 10 digits').isLength({ min: 10, max: 10 }),
-        check('password', 'Password is required').not().isEmpty(),
-        check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
-        check('role', 'Role is required').not().isEmpty(),
+        check('name', 'Name must be alphabetic').matches(/^[a-zA-Z ]+$/),
+        check('idNumber', 'ID Number must be 13 digits').matches(/^\d{13}$/),
+        check('accountNumber', 'Account Number must be 10 digits').matches(/^\d{10}$/),
+        check('password', 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character').matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/),
+        check('role', 'Role must be either customer or employee').matches(/^(customer|employee)$/),
     ],
     registerUser
 );
@@ -22,8 +19,8 @@ router.post(
 router.post(
     '/login',
     [
-        check('idNumber', 'ID Number is required').not().isEmpty(),
-        check('accountNumber', 'Account Number is required').not().isEmpty(),
+        check('idNumber', 'ID Number must be 13 digits').matches(/^\d{13}$/),
+        check('accountNumber', 'Account Number must be 10 digits').matches(/^\d{10}$/),
         check('password', 'Password is required').not().isEmpty(),
     ],
     authUser

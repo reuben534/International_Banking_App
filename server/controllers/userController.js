@@ -13,6 +13,11 @@ const registerUser = async (req, res) => {
 
     const { name, idNumber, accountNumber, password, role } = req.body;
 
+    if (role && role === 'employee') {
+        res.status(400).json({ message: 'Employee registration is not allowed' });
+        return;
+    }
+
     const userExists = await User.findOne({ idNumber });
 
     if (userExists) {
@@ -35,6 +40,7 @@ const registerUser = async (req, res) => {
             idNumber: user.idNumber,
             accountNumber: user.accountNumber,
             role: user.role,
+            token: generateToken(user._id),
         });
     } else {
         res.status(400).json({ message: 'Invalid user data' });
@@ -61,6 +67,7 @@ const authUser = async (req, res) => {
             idNumber: user.idNumber,
             accountNumber: user.accountNumber,
             role: user.role,
+            token: generateToken(user._id),
         });
     } else {
         res.status(401).json({ message: 'Invalid ID number, account number or password' });

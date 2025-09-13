@@ -12,22 +12,24 @@ dotenv.config();
 connectDB();
 
 const app = express();
+app.set('trust proxy', 1);
 
-const allowedOrigins = ['http://localhost:3000', 'YOUR_PRODUCTION_FRONTEND_URL'];
+// In a production environment, you should be more restrictive with your CORS policy.
+// For example, you might want to do something like this:
+// const allowedOrigins = ['http://localhost:3000', 'YOUR_PRODUCTION_FRONTEND_URL'];
+// app.use(cors({
+//     origin: function (origin, callback) {
+//         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+//             callback(null, true);
+//         } else {
+//             callback(new Error('Not allowed by CORS'));
+//         }
+//     },
+//     credentials: true
+// }));
 
+app.use(cors()); // Allow all origins for development
 app.use(helmet());
-app.use(cors({
-    origin: function (origin, callback) {
-        // allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
-            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    },
-    credentials: true
-}));
 app.use(express.json());
 
 // Rate limiting for all API requests
@@ -40,9 +42,9 @@ app.use('/api/', apiLimiter);
 
 // Stricter rate limiting for login attempts
 const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: 60 * 1000, // 1 minute
     max: 5, // Limit each IP to 5 login requests per windowMs
-    message: 'Too many login attempts from this IP, please try again after 15 minutes',
+    message: 'Too many login attempts from this IP, please try again after 1 minute',
 });
 app.use('/api/users/login', loginLimiter);
 

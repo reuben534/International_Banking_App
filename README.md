@@ -15,7 +15,6 @@ This is a full-stack banking application built using the MERN (MongoDB, Express.
 ### Frontend (Client)
 - React.js
 - React Router DOM
-- React Redux (for state management)
 - Axios (for API requests)
 - React-Bootstrap (for UI components)
 
@@ -32,9 +31,10 @@ This is a full-stack banking application built using the MERN (MongoDB, Express.
 This application has been hardened against common web vulnerabilities:
 - **Strict CORS Policy:** Configured to allow specific origins.
 - **Security Headers:** Implemented using `helmet` middleware.
-- **Input Validation and Sanitization:** Implemented using `express-validator` for user inputs.
+- **Input Whitelisting:** All user inputs are validated and whitelisted on the server-side using `express-validator` with strict RegEx patterns to prevent malicious data from entering the system.
+- **Password Hashing:** User passwords are not stored in plaintext. They are salted and hashed using `bcryptjs` before being saved to the database.
 - **Secure JWT Handling:** Tokens are sent via HttpOnly, secure, and same-site cookies.
-- **Rate Limiting:** Applied to all API routes and specifically to login attempts.
+- **Rate Limiting:** Applied to all API routes and specifically to login attempts to prevent brute-force attacks.
 
 ## Setup Instructions
 
@@ -62,6 +62,20 @@ Create a `.env` file in the `server` directory and add your MongoDB connection s
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 NODE_ENV=development
+```
+
+#### Seeding the Database
+
+To populate the database with initial data (e.g., employee accounts), you can use the seeder script.
+
+To import data, run:
+```bash
+npm run data:import
+```
+
+To destroy all data in the database, run:
+```bash
+npm run data:destroy
 ```
 
 ### 3. Frontend Setup (Client)

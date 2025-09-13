@@ -1,15 +1,16 @@
 const Transaction = require('../models/Transaction');
+const { validationResult } = require('express-validator');
 
 // @desc    Create new payment
 // @route   POST /api/payments
 // @access  Private
 const createPayment = async (req, res) => {
-    const { amount, currency, provider, payeeAccount, swiftCode } = req.body;
-
-    if (!amount || !currency || !provider || !payeeAccount || !swiftCode) {
-        res.status(400).json({ message: 'Please enter all fields' });
-        return;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
+
+    const { amount, currency, provider, payeeAccount, swiftCode } = req.body;
 
     const transaction = new Transaction({
         user: req.user._id, // User ID will come from auth middleware

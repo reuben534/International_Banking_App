@@ -115,9 +115,8 @@ const PaymentsPortalScreen = () => {
                 <tr key={transaction._id}>
                   <td>{transaction._id}</td>
                   <td>{transaction.user ? transaction.user.name : 'N/A'}</td>
-                  <td>{transaction.amount}</td>
+                  <td>${transaction.amount}</td>
                   <td>{transaction.currency}</td>
-                  <td>{transaction.provider}</td>
                   <td>{transaction.payeeAccount}</td>
                   <td>{transaction.swiftCode}</td>
                   <td>{transaction.status}</td>
@@ -145,7 +144,7 @@ const PaymentsPortalScreen = () => {
                         Verify
                       </Button>
                     )}
-                    {!transaction.isSubmittedToSWIFT && transaction.isVerified && (
+                    {transaction.isVerified && !transaction.isSubmittedToSWIFT && (
                       <Button
                         variant='success'
                         className='btn-sm ms-2'

@@ -7,14 +7,15 @@ const Header = () => {
   const [userInfo, setUserInfo] = useState(null);
   const navigate = useNavigate();
 
+  const storedUserInfo = localStorage.getItem('userInfo');
+
   useEffect(() => {
-    const storedUserInfo = localStorage.getItem('userInfo');
     if (storedUserInfo) {
       setUserInfo(JSON.parse(storedUserInfo));
     } else {
       setUserInfo(null);
     }
-  }, [localStorage.getItem('userInfo')]); // Re-run effect when userInfo in localStorage changes
+  }, [storedUserInfo]); // Re-run effect when userInfo in localStorage changes
 
   const logoutHandler = () => {
     localStorage.removeItem('userInfo');

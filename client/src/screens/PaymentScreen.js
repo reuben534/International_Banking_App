@@ -8,10 +8,19 @@ const PaymentScreen = () => {
   const [currency, setCurrency] = useState('USD');
   const [provider, setProvider] = useState('SWIFT');
   const [payeeAccount, setPayeeAccount] = useState('');
-  const [swiftCode, setSwiftCode] = useState('');
+  const [swiftCode, setSwiftCode] = useState('ABSAZAJJ'); // Default to Absa
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  const southAfricanBanks = [
+    { name: 'Absa Bank', swift: 'ABSAZAJJ' },
+    { name: 'African Bank', swift: 'AFRCZAJJ' },
+    { name: 'Capitec Bank', swift: 'CABLZAJJ' },
+    { name: 'First National Bank (FNB)', swift: 'FIRNZAJJ' },
+    { name: 'Investec Bank', swift: 'IVESZAJJ' },
+    { name: 'Nedbank', swift: 'NEDSZAJJ' },
+  ];
 
   const navigate = useNavigate();
 
@@ -20,7 +29,22 @@ const PaymentScreen = () => {
     if (!userInfo) {
       navigate('/login'); // Redirect if not logged in
     }
-  }, [navigate]);
+
+    if (success) {
+      const timer = setTimeout(() => {
+        setSuccess(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+
+  }, [navigate, success, error]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -53,9 +77,14 @@ const PaymentScreen = () => {
       setSwiftCode('');
 
     } catch (err) {
-      setError(err.response && err.response.data.message
-        ? err.response.data.message
-        : err.message);
+      if (err.response && err.response.data.errors) {
+        const errorMessages = err.response.data.errors.map(error => error.msg).join(', ');
+        setError(errorMessages);
+      } else if (err.response && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError(err.message);
+      }
       setLoading(false);
     }
   };
@@ -117,13 +146,18 @@ const PaymentScreen = () => {
                 </Form.Group>
 
                 <Form.Group controlId='swiftCode' className='my-3'>
-                  <Form.Label>SWIFT Code</Form.Label>
+                  <Form.Label>Bank (SWIFT Code)</Form.Label>
                   <Form.Control
-                    type='text'
-                    placeholder='Enter SWIFT code'
+                    as='select'
                     value={swiftCode}
                     onChange={(e) => setSwiftCode(e.target.value)}
-                  ></Form.Control>
+                  >
+                    {southAfricanBanks.map(bank => (
+                      <option key={bank.swift} value={bank.swift}>
+                        {bank.name} - {bank.swift}
+                      </option>
+                    ))}
+                  </Form.Control>
                 </Form.Group>
 
                 <Button type='submit' variant='primary' className='my-3' disabled={loading}>

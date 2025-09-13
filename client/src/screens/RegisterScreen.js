@@ -11,6 +11,7 @@ const RegisterScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -20,7 +21,22 @@ const RegisterScreen = () => {
     if (userInfo) {
       navigate('/'); // Redirect if already logged in
     }
-  }, [navigate]);
+
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+
+    if (success) {
+      const timer = setTimeout(() => {
+        navigate('/');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+
+  }, [navigate, error, success]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -28,6 +44,8 @@ const RegisterScreen = () => {
       setMessage('Passwords do not match');
     } else {
       setLoading(true);
+      setError(null);
+      setMessage(null);
       try {
         const config = {
           headers: {
@@ -37,13 +55,13 @@ const RegisterScreen = () => {
 
         const { data } = await axios.post(
           '/api/users/register',
-          { name, idNumber, accountNumber, password },
+          { name, idNumber, accountNumber, password, role: 'customer' },
           config
         );
 
         localStorage.setItem('userInfo', JSON.stringify(data));
         setLoading(false);
-        navigate('/');
+        setSuccess(true);
       } catch (err) {
         setError(err.response && err.response.data.message
           ? err.response.data.message
@@ -62,6 +80,7 @@ const RegisterScreen = () => {
               <h1 className='text-center mb-4'>Sign Up</h1>
               {message && <div className='alert alert-danger'>{message}</div>}
               {error && <div className='alert alert-danger'>{error}</div>}
+              {success && <div className='alert alert-success'>Registration successful! Redirecting...</div>}
               {loading && <div>Loading...</div>}
               <Form onSubmit={submitHandler}>
                 <Form.Group controlId='name' className='my-3'>
