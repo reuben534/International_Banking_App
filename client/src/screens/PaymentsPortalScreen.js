@@ -34,9 +34,14 @@ const PaymentsPortalScreen = () => {
       setTransactions(data);
       setLoading(false);
     } catch (err) {
-      setError(err.response && err.response.data.message
-        ? err.response.data.message
-        : err.message);
+      if (err.response && err.response.data.errors) {
+        const errorMessages = err.response.data.errors.map(error => error.msg).join(', ');
+        setError(errorMessages);
+      } else if (err.response && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError(err.message);
+      }
       setLoading(false);
     }
   };
@@ -57,9 +62,14 @@ const PaymentsPortalScreen = () => {
       fetchTransactions(); // Refresh transactions after update
       setLoading(false);
     } catch (err) {
-      setError(err.response && err.response.data.message
-        ? err.response.data.message
-        : err.message);
+      if (err.response && err.response.data.errors) {
+        const errorMessages = err.response.data.errors.map(error => error.msg).join(', ');
+        setError(errorMessages);
+      } else if (err.response && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError(err.message);
+      }
       setLoading(false);
     }
   };
@@ -80,9 +90,14 @@ const PaymentsPortalScreen = () => {
       fetchTransactions(); // Refresh transactions after update
       setLoading(false);
     } catch (err) {
-      setError(err.response && err.response.data.message
-        ? err.response.data.message
-        : err.message);
+      if (err.response && err.response.data.errors) {
+        const errorMessages = err.response.data.errors.map(error => error.msg).join(', ');
+        setError(errorMessages);
+      } else if (err.response && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError(err.message);
+      }
       setLoading(false);
     }
   };

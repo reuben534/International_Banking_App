@@ -13,6 +13,9 @@ const PaymentScreen = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const [amountError, setAmountError] = useState('');
+  const [payeeAccountError, setPayeeAccountError] = useState('');
+
   const southAfricanBanks = [
     { name: 'Absa Bank', swift: 'ABSAZAJJ' },
     { name: 'African Bank', swift: 'AFRCZAJJ' },
@@ -23,6 +26,22 @@ const PaymentScreen = () => {
   ];
 
   const navigate = useNavigate();
+
+  const validateAmount = (amount) => {
+    if (!/^\d+(\.\d{1,2})?$/.test(amount)) {
+      setAmountError('Amount must be a valid decimal number');
+    } else {
+      setAmountError('');
+    }
+  };
+
+  const validatePayeeAccount = (payeeAccount) => {
+    if (!/^[a-zA-Z0-9]{5,}$/.test(payeeAccount)) {
+      setPayeeAccountError('Payee account must be alphanumeric and at least 5 characters');
+    } else {
+      setPayeeAccountError('');
+    }
+  };
 
   useEffect(() => {
     const userInfo = localStorage.getItem('userInfo');
@@ -51,6 +70,14 @@ const PaymentScreen = () => {
     setLoading(true);
     setError(null); // Clear previous errors
     setSuccess(false); // Clear previous success messages
+
+    validateAmount(amount);
+    validatePayeeAccount(payeeAccount);
+
+    if (amountError || payeeAccountError) {
+      setLoading(false);
+      return;
+    }
 
     try {
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -95,19 +122,26 @@ const PaymentScreen = () => {
         <Col xs={12} md={8}>
           <Card className='p-4 shadow'>
             <Card.Body>
-              <h1 className='text-center mb-4'>Initiate International Payment</h1>
+              <h1 className='text-center mb-4'>International Payment</h1>
               {error && <div className='alert alert-danger'>{error}</div>}
               {loading && <div>Loading...</div>}
               {success && <div className='alert alert-success'>Payment submitted successfully!</div>}
-              <Form onSubmit={submitHandler}>
+              <Form noValidate onSubmit={submitHandler}>
                 <Form.Group controlId='amount' className='my-3'>
                   <Form.Label>Amount</Form.Label>
                   <Form.Control
                     type='number'
                     placeholder='Enter amount'
                     value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
+                    onChange={(e) => {
+                      setAmount(e.target.value);
+                      validateAmount(e.target.value);
+                    }}
+                    isInvalid={!!amountError}
                   ></Form.Control>
+                  <Form.Control.Feedback type='invalid'>
+                    {amountError}
+                  </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group controlId='currency' className='my-3'>
@@ -141,8 +175,15 @@ const PaymentScreen = () => {
                     type='text'
                     placeholder='Enter payee account details'
                     value={payeeAccount}
-                    onChange={(e) => setPayeeAccount(e.target.value)}
+                    onChange={(e) => {
+                      setPayeeAccount(e.target.value);
+                      validatePayeeAccount(e.target.value);
+                    }}
+                    isInvalid={!!payeeAccountError}
                   ></Form.Control>
+                  <Form.Control.Feedback type='invalid'>
+                    {payeeAccountError}
+                  </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group controlId='swiftCode' className='my-3'>
@@ -160,7 +201,7 @@ const PaymentScreen = () => {
                   </Form.Control>
                 </Form.Group>
 
-                <Button type='submit' variant='primary' className='my-3' disabled={loading}>
+                <Button type='submit' variant='primary' className='my-3' disabled={loading || !!amountError || !!payeeAccountError}>
                   Pay Now
                 </Button>
               </Form>

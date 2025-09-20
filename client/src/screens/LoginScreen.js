@@ -10,7 +10,35 @@ const LoginScreen = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const [idNumberError, setIdNumberError] = useState('');
+  const [accountNumberError, setAccountNumberError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
   const navigate = useNavigate();
+
+  const validateIdNumber = (idNumber) => {
+    if (!/^\d{13}$/.test(idNumber)) {
+      setIdNumberError('ID Number must be 13 digits');
+    } else {
+      setIdNumberError('');
+    }
+  };
+
+  const validateAccountNumber = (accountNumber) => {
+    if (!/^\d{10}$/.test(accountNumber)) {
+      setAccountNumberError('Account Number must be 10 digits');
+    } else {
+      setAccountNumberError('');
+    }
+  };
+
+  const validatePassword = (password) => {
+    if (!password) {
+      setPasswordError('Password is required');
+    } else {
+      setPasswordError('');
+    }
+  };
 
   useEffect(() => {
     const userInfo = localStorage.getItem('userInfo');
@@ -21,6 +49,15 @@ const LoginScreen = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    validateIdNumber(idNumber);
+    validateAccountNumber(accountNumber);
+    validatePassword(password);
+
+    if (idNumberError || accountNumberError || passwordError) {
+      return;
+    }
+
     setLoading(true);
     try {
       const config = {
@@ -60,15 +97,22 @@ const LoginScreen = () => {
               <h1 className='text-center mb-4'>Sign In</h1>
               {error && <div className='alert alert-danger'>{error}</div>}
               {loading && <div>Loading...</div>}
-              <Form onSubmit={submitHandler}>
+              <Form noValidate onSubmit={submitHandler}>
                 <Form.Group controlId='idNumber' className='my-3'>
                   <Form.Label>ID Number</Form.Label>
                   <Form.Control
                     type='text'
                     placeholder='Enter ID number'
                     value={idNumber}
-                    onChange={(e) => setIdNumber(e.target.value)}
+                    onChange={(e) => {
+                      setIdNumber(e.target.value);
+                      validateIdNumber(e.target.value);
+                    }}
+                    isInvalid={!!idNumberError}
                   ></Form.Control>
+                  <Form.Control.Feedback type='invalid'>
+                    {idNumberError}
+                  </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group controlId='accountNumber' className='my-3'>
@@ -77,8 +121,15 @@ const LoginScreen = () => {
                     type='text'
                     placeholder='Enter account number'
                     value={accountNumber}
-                    onChange={(e) => setAccountNumber(e.target.value)}
+                    onChange={(e) => {
+                      setAccountNumber(e.target.value);
+                      validateAccountNumber(e.target.value);
+                    }}
+                    isInvalid={!!accountNumberError}
                   ></Form.Control>
+                  <Form.Control.Feedback type='invalid'>
+                    {accountNumberError}
+                  </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group controlId='password' className='my-3'>
@@ -87,11 +138,18 @@ const LoginScreen = () => {
                     type='password'
                     placeholder='Enter password'
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      validatePassword(e.target.value);
+                    }}
+                    isInvalid={!!passwordError}
                   ></Form.Control>
+                  <Form.Control.Feedback type='invalid'>
+                    {passwordError}
+                  </Form.Control.Feedback>
                 </Form.Group>
 
-                <Button type='submit' variant='primary' className='my-3' disabled={loading}>
+                <Button type='submit' variant='primary' className='my-3' disabled={loading || !!idNumberError || !!accountNumberError || !!passwordError}>
                   Sign In
                 </Button>
               </Form>

@@ -57,4 +57,14 @@ app.use('/api/payments', paymentRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const https = require('https');
+const fs = require('fs');
+
+const options = {
+    key: fs.readFileSync(__dirname + '/key.pem'),
+    cert: fs.readFileSync(__dirname + '/cert.pem'),
+};
+
+https.createServer(options, app).listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
