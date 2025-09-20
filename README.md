@@ -64,6 +64,15 @@ JWT_SECRET=your_jwt_secret
 NODE_ENV=development
 ```
 
+#### Generating SSL Certificates
+The server runs on HTTPS, which requires an SSL certificate. For local development, you can generate a self-signed certificate using OpenSSL.
+
+Run the following command in the `server` directory:
+```bash
+openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes
+```
+This will create `key.pem` and `cert.pem` files. These files are included in the `.gitignore` and should not be committed to version control.
+
 #### Seeding the Database
 
 To populate the database with initial data (e.g., employee accounts), you can use the seeder script.
@@ -98,7 +107,7 @@ cd server
 npm run server
 ```
 
-The server will run on `http://localhost:5000` (or the port specified in your `.env` file).
+The server will run on `https://localhost:5000` (or the port specified in your `.env` file).
 
 ### 2. Start the Frontend Development Server
 
