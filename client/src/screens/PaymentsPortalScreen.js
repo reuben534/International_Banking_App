@@ -34,10 +34,10 @@ const PaymentsPortalScreen = () => {
       setTransactions(data);
       setLoading(false);
     } catch (err) {
-      if (err.response && err.response.data.errors) {
-        const errorMessages = err.response.data.errors.map(error => error.msg).join(', ');
+      const errorMessages = err.response?.data?.errors?.map(error => error.msg).join(', ');
+      if (errorMessages) {
         setError(errorMessages);
-      } else if (err.response && err.response.data.message) {
+      } else if (err.response?.data?.message) {
         setError(err.response.data.message);
       } else {
         setError(err.message);
@@ -58,14 +58,10 @@ const PaymentsPortalScreen = () => {
       };
 
       await axios.put(`/api/payments/${id}/verify`, {}, config);
-      setSuccessMessage('Transaction verified successfully!');
-      fetchTransactions(); // Refresh transactions after update
-      setLoading(false);
-    } catch (err) {
-      if (err.response && err.response.data.errors) {
-        const errorMessages = err.response.data.errors.map(error => error.msg).join(', ');
+      const errorMessages = err.response?.data?.errors?.map(error => error.msg).join(', ');
+      if (errorMessages) {
         setError(errorMessages);
-      } else if (err.response && err.response.data.message) {
+      } else if (err.response?.data?.message) {
         setError(err.response.data.message);
       } else {
         setError(err.message);
@@ -90,10 +86,10 @@ const PaymentsPortalScreen = () => {
       fetchTransactions(); // Refresh transactions after update
       setLoading(false);
     } catch (err) {
-      if (err.response && err.response.data.errors) {
-        const errorMessages = err.response.data.errors.map(error => error.msg).join(', ');
+      const errorMessages = err.response?.data?.errors?.map(error => error.msg).join(', ');
+      if (errorMessages) {
         setError(errorMessages);
-      } else if (err.response && err.response.data.message) {
+      } else if (err.response?.data?.message) {
         setError(err.response.data.message);
       } else {
         setError(err.message);
