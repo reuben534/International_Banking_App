@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useSimpleErrorHandler from '../hooks/useSimpleErrorHandler';
 
 const TransactionHistoryScreen = () => {
   const [transactions, setTransactions] = useState([]);
@@ -9,6 +10,7 @@ const TransactionHistoryScreen = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const handleError = useSimpleErrorHandler(setError, setLoading);
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -33,10 +35,7 @@ const TransactionHistoryScreen = () => {
       setTransactions(data);
       setLoading(false);
     } catch (err) {
-      setError(err.response?.data?.message
-        ? err.response.data.message
-        : err.message);
-      setLoading(false);
+      handleError(err);
     }
   };
 

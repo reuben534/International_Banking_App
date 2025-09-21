@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useErrorHandler from '../hooks/useErrorHandler';
 
 const PaymentsPortalScreen = () => {
   const [transactions, setTransactions] = useState([]);
@@ -10,6 +11,7 @@ const PaymentsPortalScreen = () => {
   const [successMessage, setSuccessMessage] = useState(null);
 
   const navigate = useNavigate();
+  const handleError = useErrorHandler(setError, setLoading);
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -31,18 +33,8 @@ const PaymentsPortalScreen = () => {
       };
 
       const { data } = await axios.get('/api/payments', config);
-      setTransactions(data);
-      setLoading(false);
     } catch (err) {
-      const errorMessages = err.response?.data?.errors?.map(error => error.msg).join(', ');
-      if (errorMessages) {
-        setError(errorMessages);
-      } else if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else {
-        setError(err.message);
-      }
-      setLoading(false);
+      handleError(err);
     }
   };
 
@@ -57,16 +49,7 @@ const PaymentsPortalScreen = () => {
         },
       };
 
-      await axios.put(`/api/payments/${id}/verify`, {}, config);
-      const errorMessages = err.response?.data?.errors?.map(error => error.msg).join(', ');
-      if (errorMessages) {
-        setError(errorMessages);
-      } else if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else {
-        setError(err.message);
-      }
-      setLoading(false);
+      handleError(err);
     }
   };
 
@@ -86,15 +69,7 @@ const PaymentsPortalScreen = () => {
       fetchTransactions(); // Refresh transactions after update
       setLoading(false);
     } catch (err) {
-      const errorMessages = err.response?.data?.errors?.map(error => error.msg).join(', ');
-      if (errorMessages) {
-        setError(errorMessages);
-      } else if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else {
-        setError(err.message);
-      }
-      setLoading(false);
+      handleError(err);
     }
   };
 

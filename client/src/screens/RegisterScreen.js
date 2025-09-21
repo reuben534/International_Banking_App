@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Col, Container, Card } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useErrorHandler from '../hooks/useErrorHandler';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
@@ -21,6 +22,7 @@ const RegisterScreen = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
   const navigate = useNavigate();
+  const handleError = useErrorHandler(setError, setLoading);
 
   const validateName = (name) => {
     if (!/^[a-zA-Z ]+$/.test(name)) {
@@ -120,15 +122,7 @@ const RegisterScreen = () => {
         setLoading(false);
         setSuccess(true);
       } catch (err) {
-              const errorMessages = err.response?.data?.errors?.map(error => error.msg).join(', ');
-              if (errorMessages) {
-                setError(errorMessages);
-              } else if (err.response?.data?.message) {
-                setError(err.response.data.message);
-              } else {
-                setError(err.message);
-              }
-              setLoading(false);      }
+              handleError(err);      }
     }
   };
 

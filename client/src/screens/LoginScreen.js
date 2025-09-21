@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Col, Container, Card } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useErrorHandler from '../hooks/useErrorHandler';
 
 const LoginScreen = () => {
   const [idNumber, setIdNumber] = useState('');
@@ -15,6 +16,7 @@ const LoginScreen = () => {
   const [passwordError, setPasswordError] = useState('');
 
   const navigate = useNavigate();
+  const handleError = useErrorHandler(setError, setLoading);
 
   const validateIdNumber = (idNumber) => {
     if (!/^\d{13}$/.test(idNumber)) {
@@ -76,15 +78,7 @@ const LoginScreen = () => {
       setLoading(false);
       navigate('/');
     } catch (err) {
-      const errorMessages = err.response?.data?.errors?.map(error => error.msg).join(', ');
-      if (errorMessages) {
-        setError(errorMessages);
-      } else if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else {
-        setError(err.message);
-      }
-      setLoading(false);
+      handleError(err);
     }
   };
 

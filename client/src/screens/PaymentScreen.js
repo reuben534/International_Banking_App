@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useErrorHandler from '../hooks/useErrorHandler';
 
 const PaymentScreen = () => {
   const [amount, setAmount] = useState('');
@@ -26,6 +27,7 @@ const PaymentScreen = () => {
   ];
 
   const navigate = useNavigate();
+  const handleError = useErrorHandler(setError, setLoading);
 
   const validateAmount = (amount) => {
     if (!/^\d+(\.\d{1,2})?$/.test(amount)) {
@@ -104,15 +106,7 @@ const PaymentScreen = () => {
       setSwiftCode('');
 
     } catch (err) {
-      const errorMessages = err.response?.data?.errors?.map(error => error.msg).join(', ');
-      if (errorMessages) {
-        setError(errorMessages);
-      } else if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else {
-        setError(err.message);
-      }
-      setLoading(false);
+      handleError(err);
     }
   };
 
