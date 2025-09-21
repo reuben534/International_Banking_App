@@ -120,16 +120,15 @@ const RegisterScreen = () => {
         setLoading(false);
         setSuccess(true);
       } catch (err) {
-        if (err.response && err.response.data.errors) {
-          const errorMessages = err.response.data.errors.map(error => error.msg).join(', ');
-          setError(errorMessages);
-        } else if (err.response && err.response.data.message) {
-          setError(err.response.data.message);
-        } else {
-          setError(err.message);
-        }
-        setLoading(false);
-      }
+              const errorMessages = err.response?.data?.errors?.map(error => error.msg).join(', ');
+              if (errorMessages) {
+                setError(errorMessages);
+              } else if (err.response?.data?.message) {
+                setError(err.response.data.message);
+              } else {
+                setError(err.message);
+              }
+              setLoading(false);      }
     }
   };
 
