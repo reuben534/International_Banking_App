@@ -12,7 +12,7 @@ const importData = async () => {
     try {
         await User.deleteMany();
 
-        const createdUsers = await Promise.all(
+        await Promise.all(
             users.map(async (user) => {
                 const newUser = new User(user);
                 return await newUser.save();
