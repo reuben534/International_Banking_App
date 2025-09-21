@@ -33,7 +33,7 @@ const TransactionHistoryScreen = () => {
       setTransactions(data);
       setLoading(false);
     } catch (err) {
-      setError(err.response && err.response.data.message
+      setError(err.response?.data?.message
         ? err.response.data.message
         : err.message);
       setLoading(false);
