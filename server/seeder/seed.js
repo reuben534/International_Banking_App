@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-const path = require('path');
+const path = require('node:path');
 const users = require('./users');
 const User = require('../models/User');
 const connectDB = require('../config/db');
