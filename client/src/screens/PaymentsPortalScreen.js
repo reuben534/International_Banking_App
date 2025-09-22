@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Table, Button, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -17,16 +17,7 @@ const PaymentsPortalScreen = () => {
   const navigate = useNavigate();
   const handleError = useErrorHandler(setError, setLoading, paymentsPortalErrorMap, '');
 
-  useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    if (!userInfo || userInfo.role !== 'employee') {
-      navigate('/login'); // Redirect if not logged in as employee
-    } else {
-      fetchTransactions();
-    }
-  }, [navigate]);
-
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     setLoading(true);
     try {
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -37,10 +28,21 @@ const PaymentsPortalScreen = () => {
       };
 
       const { data } = await axios.get('/api/payments', config);
+      setTransactions(data);
+      setLoading(false);
     } catch (err) {
       handleError(err);
     }
-  };
+  }, [handleError]);
+
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    if (!userInfo || userInfo.role !== 'employee') {
+      navigate('/login'); // Redirect if not logged in as employee
+    } else {
+      fetchTransactions();
+    }
+  }, [navigate, fetchTransactions]);
 
   const verifyHandler = async (id) => {
     setLoading(true);

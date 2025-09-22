@@ -36,10 +36,10 @@ const TransactionHistoryScreen = () => {
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    if (!userInfo) {
-      navigate('/login'); // Redirect if not logged in
-    } else {
+    if (userInfo) {
       fetchTransactions();
+    } else {
+      navigate('/login'); // Redirect if not logged in
     }
   }, [navigate, fetchTransactions]);
 

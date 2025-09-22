@@ -30,34 +30,34 @@ const RegisterScreen = () => {
   const handleError = useErrorHandler(setError, setLoading, registerErrorMap, 'register');
 
   const validateName = (name) => {
-    if (!/^[a-zA-Z ]+$/.test(name)) {
-      setNameError('Name must be alphabetic');
-    } else {
+    if (/^[a-zA-Z ]+$/.test(name)) {
       setNameError('');
+    } else {
+      setNameError('Name must be alphabetic');
     }
   };
 
   const validateIdNumber = (idNumber) => {
-    if (!/^\d{13}$/.test(idNumber)) {
-      setIdNumberError('ID Number must be 13 digits');
-    } else {
+    if (/^\d{13}$/.test(idNumber)) {
       setIdNumberError('');
+    } else {
+      setIdNumberError('ID Number must be 13 digits');
     }
   };
 
   const validateAccountNumber = (accountNumber) => {
-    if (!/^\d{10}$/.test(accountNumber)) {
-      setAccountNumberError('Account Number must be 10 digits');
-    } else {
+    if (/^\d{10}$/.test(accountNumber)) {
       setAccountNumberError('');
+    } else {
+      setAccountNumberError('Account Number must be 10 digits');
     }
   };
 
   const validatePassword = (password) => {
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
-      setPasswordError('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character');
-    } else {
+    if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
       setPasswordError('');
+    } else {
+      setPasswordError('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character');
     }
   };
 
