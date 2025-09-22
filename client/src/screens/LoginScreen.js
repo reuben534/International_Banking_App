@@ -23,26 +23,26 @@ const LoginScreen = () => {
   const handleError = useErrorHandler(setError, setLoading, loginErrorMap, 'login');
 
   const validateIdNumber = (idNumber) => {
-    if (!/^\d{13}$/.test(idNumber)) {
-      setIdNumberError('ID Number must be 13 digits');
-    } else {
+    if (/^\d{13}$/.test(idNumber)) {
       setIdNumberError('');
+    } else {
+      setIdNumberError('ID Number must be 13 digits');
     }
   };
 
   const validateAccountNumber = (accountNumber) => {
-    if (!/^\d{10}$/.test(accountNumber)) {
-      setAccountNumberError('Account Number must be 10 digits');
-    } else {
+    if (/^\d{10}$/.test(accountNumber)) {
       setAccountNumberError('');
+    } else {
+      setAccountNumberError('Account Number must be 10 digits');
     }
   };
 
   const validatePassword = (password) => {
-    if (!password) {
-      setPasswordError('Password is required');
-    } else {
+    if (password) {
       setPasswordError('');
+    } else {
+      setPasswordError('Password is required');
     }
   };
 
