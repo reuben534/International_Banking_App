@@ -15,7 +15,7 @@ const useSimpleErrorHandler = (setError, setLoading, customMessageMap = {}, scre
     
     setError(displayMessage);
     setLoading(false);
-  }, [setError, setLoading, customMessageMap, screenContext]);
+  }, [setError, setLoading, customMessageMap]);
 
   return handleError;
 };
