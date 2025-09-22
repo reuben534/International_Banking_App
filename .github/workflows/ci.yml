@@ -68,4 +68,4 @@ jobs:
             -Dsonar.sources=./client/src,./server
             -Dsonar.tests=./client/src,./server
             -Dsonar.javascript.lcov.reportPaths=./client/coverage/lcov.info # Assuming client tests generate lcov report
-            -Dsonar.test.inclusions=**/*.test.js,**/*.spec.js
+            
