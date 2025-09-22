@@ -55,8 +55,8 @@ app.use('/api/payments', paymentRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-const https = require('https');
-const fs = require('fs');
+const https = require('node:https');
+const fs = require('node:fs');
 
 const options = {
     key: fs.readFileSync(__dirname + '/key.pem'),
