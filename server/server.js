@@ -19,7 +19,7 @@ app.set('trust proxy', 1);
 const allowedOrigins = ['http://localhost:3000', 'YOUR_PRODUCTION_FRONTEND_URL']; // REMEMBER TO UPDATE 'YOUR_PRODUCTION_FRONTEND_URL'
 app.use(cors({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
