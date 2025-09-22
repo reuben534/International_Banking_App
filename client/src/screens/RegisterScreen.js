@@ -62,10 +62,10 @@ const RegisterScreen = () => {
   };
 
   const validateConfirmPassword = (confirmPassword) => {
-    if (password !== confirmPassword) {
-      setConfirmPasswordError('Passwords do not match');
-    } else {
+    if (password === confirmPassword) {
       setConfirmPasswordError('');
+    } else {
+      setConfirmPasswordError('Passwords do not match');
     }
   };
 
