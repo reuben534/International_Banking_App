@@ -30,18 +30,18 @@ const PaymentScreen = () => {
   const handleError = useErrorHandler(setError, setLoading, {}, '');
 
   const validateAmount = (amount) => {
-    if (!/^\d+(\.\d{1,2})?$/.test(amount)) {
-      setAmountError('Amount must be a valid decimal number');
-    } else {
+    if (/^\d+(\.\d{1,2})?$/.test(amount)) {
       setAmountError('');
+    } else {
+      setAmountError('Amount must be a valid decimal number');
     }
   };
 
   const validatePayeeAccount = (payeeAccount) => {
-    if (!/^[a-zA-Z0-9]{5,}$/.test(payeeAccount)) {
-      setPayeeAccountError('Payee account must be alphanumeric and at least 5 characters');
-    } else {
+    if (/^[a-zA-Z0-9]{5,}$/.test(payeeAccount)) {
       setPayeeAccountError('');
+    } else {
+      setPayeeAccountError('Payee account must be alphanumeric and at least 5 characters');
     }
   };
 
