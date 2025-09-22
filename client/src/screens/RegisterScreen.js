@@ -104,9 +104,7 @@ const RegisterScreen = () => {
       return;
     }
 
-    if (password !== confirmPassword) {
-      setMessage('Passwords do not match');
-    } else {
+    if (password === confirmPassword) {
       setLoading(true);
       setError(null);
       setMessage(null);
@@ -128,6 +126,8 @@ const RegisterScreen = () => {
         setSuccess(true);
       } catch (err) {
               handleError(err);      }
+    } else {
+      setMessage('Passwords do not match');
     }
   };
 
