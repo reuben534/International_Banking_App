@@ -16,17 +16,8 @@ app.set('trust proxy', 1);
 
 // In a production environment, you should be more restrictive with your CORS policy.
 // For example, you might want to do something like this:
-const allowedOrigins = new Set(['http://localhost:3000', 'YOUR_PRODUCTION_FRONTEND_URL']); // REMEMBER TO UPDATE 'YOUR_PRODUCTION_FRONTEND_URL'
-app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.has(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true
-}));
+const allowedOrigins = new Set(['http://localhost:3000', 'https://localhost:3000', 'http://localhost:5000', 'https://localhost:5000']);
+app.use(cors());
 app.use(helmet());
 app.use(express.json());
 
@@ -52,6 +43,12 @@ app.get('/', (req, res) => {
 
 app.use('/api/users', userRoutes);
 app.use('/api/payments', paymentRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
 
 const PORT = process.env.PORT || 5000;
 

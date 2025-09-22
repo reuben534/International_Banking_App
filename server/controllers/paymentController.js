@@ -1,10 +1,11 @@
 const Transaction = require('../models/Transaction');
 const { validationResult } = require('express-validator');
+const asyncHandler = require('express-async-handler');
 
 // @desc    Create new payment
 // @route   POST /api/payments
 // @access  Private
-const createPayment = async (req, res) => {
+const createPayment = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -23,28 +24,28 @@ const createPayment = async (req, res) => {
 
     const createdTransaction = await transaction.save();
     res.status(201).json(createdTransaction);
-};
+});
 
 // @desc    Get all payments
 // @route   GET /api/payments
 // @access  Private/Employee
-const getPayments = async (req, res) => {
+const getPayments = asyncHandler(async (req, res) => {
     const payments = await Transaction.find({}).populate('user', 'name');
     res.json(payments);
-};
+});
 
 // @desc    Get customer payments
 // @route   GET /api/payments/my
 // @access  Private/Customer
-const getCustomerPayments = async (req, res) => {
+const getCustomerPayments = asyncHandler(async (req, res) => {
     const payments = await Transaction.find({ user: req.user._id });
     res.json(payments);
-};
+});
 
 // @desc    Update payment to verified
 // @route   PUT /api/payments/:id/verify
 // @access  Private/Employee
-const updatePaymentToVerified = async (req, res) => {
+const updatePaymentToVerified = asyncHandler(async (req, res) => {
     const transaction = await Transaction.findById(req.params.id);
 
     if (transaction) {
@@ -56,12 +57,12 @@ const updatePaymentToVerified = async (req, res) => {
     } else {
         res.status(404).json({ message: 'Transaction not found' });
     }
-};
+});
 
 // @desc    Update payment to submitted to SWIFT
 // @route   PUT /api/payments/:id/submit
 // @access  Private/Employee
-const updatePaymentToSubmittedToSWIFT = async (req, res) => {
+const updatePaymentToSubmittedToSWIFT = asyncHandler(async (req, res) => {
     const transaction = await Transaction.findById(req.params.id);
 
     if (transaction) {
@@ -73,6 +74,6 @@ const updatePaymentToSubmittedToSWIFT = async (req, res) => {
     } else {
         res.status(404).json({ message: 'Transaction not found' });
     }
-};
+});
 
 module.exports = { createPayment, getPayments, getCustomerPayments, updatePaymentToVerified, updatePaymentToSubmittedToSWIFT };

@@ -1,11 +1,12 @@
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 const { validationResult } = require('express-validator');
+const asyncHandler = require('express-async-handler');
 
 // @desc    Register a new user
 // @route   POST /api/users/register
 // @access  Public
-const registerUser = async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -45,12 +46,12 @@ const registerUser = async (req, res) => {
     } else {
         res.status(400).json({ message: 'Invalid user data' });
     }
-};
+});
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
 // @access  Public
-const authUser = async (req, res) => {
+const authUser = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -72,6 +73,6 @@ const authUser = async (req, res) => {
     } else {
         res.status(401).json({ message: 'Invalid ID number, account number or password' });
     }
-};
+});
 
 module.exports = { registerUser, authUser };
