@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Table, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -16,16 +16,7 @@ const TransactionHistoryScreen = () => {
   const navigate = useNavigate();
   const handleError = useSimpleErrorHandler(setError, setLoading, transactionHistoryErrorMap, '');
 
-  useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    if (!userInfo) {
-      navigate('/login'); // Redirect if not logged in
-    } else {
-      fetchTransactions();
-    }
-  }, [navigate]);
-
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     setLoading(true);
     try {
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -41,7 +32,16 @@ const TransactionHistoryScreen = () => {
     } catch (err) {
       handleError(err);
     }
-  };
+  }, [handleError]);
+
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    if (!userInfo) {
+      navigate('/login'); // Redirect if not logged in
+    } else {
+      fetchTransactions();
+    }
+  }, [navigate, fetchTransactions]);
 
   return (
     <Container>
