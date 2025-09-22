@@ -4,13 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useSimpleErrorHandler from '../hooks/useSimpleErrorHandler';
 
+const transactionHistoryErrorMap = {
+  'Transaction not found': 'Transaction history not available or transaction not found.',
+};
+
 const TransactionHistoryScreen = () => {
   const [transactions, setTransactions] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const handleError = useSimpleErrorHandler(setError, setLoading);
+  const handleError = useSimpleErrorHandler(setError, setLoading, transactionHistoryErrorMap, '');
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));

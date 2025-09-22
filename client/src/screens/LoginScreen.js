@@ -4,6 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useErrorHandler from '../hooks/useErrorHandler';
 
+const loginErrorMap = {
+  'Invalid ID number, account number or password': 'Incorrect ID number, account number, or password. Please try again.',
+};
+
 const LoginScreen = () => {
   const [idNumber, setIdNumber] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
@@ -16,7 +20,7 @@ const LoginScreen = () => {
   const [passwordError, setPasswordError] = useState('');
 
   const navigate = useNavigate();
-  const handleError = useErrorHandler(setError, setLoading);
+  const handleError = useErrorHandler(setError, setLoading, loginErrorMap, 'login');
 
   const validateIdNumber = (idNumber) => {
     if (!/^\d{13}$/.test(idNumber)) {

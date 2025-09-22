@@ -4,6 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useErrorHandler from '../hooks/useErrorHandler';
 
+const paymentsPortalErrorMap = {
+  'Transaction not found': 'The requested transaction could not be found.',
+};
+
 const PaymentsPortalScreen = () => {
   const [transactions, setTransactions] = useState([]);
   const [error, setError] = useState(null);
@@ -11,7 +15,7 @@ const PaymentsPortalScreen = () => {
   const [successMessage, setSuccessMessage] = useState(null);
 
   const navigate = useNavigate();
-  const handleError = useErrorHandler(setError, setLoading);
+  const handleError = useErrorHandler(setError, setLoading, paymentsPortalErrorMap, '');
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -49,6 +53,11 @@ const PaymentsPortalScreen = () => {
         },
       };
 
+      await axios.put(`/api/payments/${id}/verify`, {}, config);
+      setSuccessMessage('Transaction verified successfully!');
+      fetchTransactions(); // Refresh transactions after update
+      setLoading(false);
+    } catch (err) {
       handleError(err);
     }
   };

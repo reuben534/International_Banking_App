@@ -27,7 +27,7 @@ const PaymentScreen = () => {
   ];
 
   const navigate = useNavigate();
-  const handleError = useErrorHandler(setError, setLoading);
+  const handleError = useErrorHandler(setError, setLoading, {}, '');
 
   const validateAmount = (amount) => {
     if (!/^\d+(\.\d{1,2})?$/.test(amount)) {

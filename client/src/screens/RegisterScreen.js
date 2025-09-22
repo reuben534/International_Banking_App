@@ -4,6 +4,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useErrorHandler from '../hooks/useErrorHandler';
 
+const registerErrorMap = {
+  'User already exists': 'An account with this ID number already exists. Please try logging in or use a different ID number.',
+  'Invalid user data': 'Registration failed due to invalid data. Please check your inputs.',
+};
+
 const RegisterScreen = () => {
   const [name, setName] = useState('');
   const [idNumber, setIdNumber] = useState('');
@@ -22,7 +27,7 @@ const RegisterScreen = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
   const navigate = useNavigate();
-  const handleError = useErrorHandler(setError, setLoading);
+  const handleError = useErrorHandler(setError, setLoading, registerErrorMap, 'register');
 
   const validateName = (name) => {
     if (!/^[a-zA-Z ]+$/.test(name)) {
