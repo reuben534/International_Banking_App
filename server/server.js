@@ -4,7 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const hpp = require('hpp');
-const mongoSanitize = require('express-mongo-sanitize');
+const mongoSanitize = require('@exortek/express-mongo-sanitize');
 
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
@@ -17,19 +17,7 @@ connectDB();
 const app = express();
 app.set('trust proxy', 1);
 
-// In a production environment, you should be more restrictive with your CORS policy.
-const allowedOrigins = new Set(['http://localhost:3000', 'https://localhost:3000']);
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (allowedOrigins.has(origin) || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-};
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(helmet());
 app.use(express.json());
 app.use(mongoSanitize());

@@ -84,6 +84,13 @@ const PaymentsPortalScreen = () => {
     }
   };
 
+  const currencySymbols = {
+    USD: '$',
+    EUR: '€',
+    GBP: '£',
+    ZAR: 'R',
+  };
+
   return (
     <Container>
       <Row className='justify-content-md-center'>
@@ -112,7 +119,7 @@ const PaymentsPortalScreen = () => {
                 <tr key={transaction._id}>
                   <td>{transaction._id}</td>
                   <td>{transaction.user ? transaction.user.name : 'N/A'}</td>
-                  <td>${transaction.amount}</td>
+                  <td>{currencySymbols[transaction.currency] || transaction.currency} {transaction.amount}</td>
                   <td>{transaction.currency}</td>
                   <td>{transaction.payeeAccount}</td>
                   <td>{transaction.swiftCode}</td>
