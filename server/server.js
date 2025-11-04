@@ -9,6 +9,7 @@ const mongoSanitize = require('@exortek/express-mongo-sanitize');
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const employeeRoutes = require('./routes/employeeRoutes');
 
 dotenv.config();
 
@@ -45,6 +46,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/users', userRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/employees', employeeRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

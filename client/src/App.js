@@ -7,6 +7,7 @@ import RegisterScreen from './screens/RegisterScreen';
 import PaymentScreen from './screens/PaymentScreen';
 import PaymentsPortalScreen from './screens/PaymentsPortalScreen';
 import TransactionHistoryScreen from './screens/TransactionHistoryScreen';
+import EmployeePortal from './screens/EmployeePortal';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path='/payment' element={<PaymentScreen />} />
             <Route path='/transactions' element={<TransactionHistoryScreen />} />
             <Route path='/admin/payments' element={<PaymentsPortalScreen />} />
+            <Route path='/employee' element={<EmployeePortal />} />
             <Route path='/' element={<h1>Welcome to the International Payments Portal</h1>} exact />
           </Routes>
         </Container>
