@@ -5,7 +5,7 @@ sonarqubeScanner({
   token: process.env.SONAR_TOKEN,
   options: {
     'sonar.projectKey': 'reuben534',
-    'sonar.projectName': 'reuben534/International_Banking_App',
+    'sonar.projectName': 'International_Banking_App',
     'sonar.sources': 'client/src,server',
     'sonar.exclusions': '**/node_modules/**,**/*.test.js',
     'sonar.tests': 'client/src',
