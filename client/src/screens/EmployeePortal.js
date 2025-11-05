@@ -35,7 +35,7 @@ const EmployeePortal = () => {
             setEmail('');
             setPassword('');
         } catch (error) {
-            setError(error.response && error.response.data.message ? error.response.data.message : error.message);
+            setError(error.response?.data?.message || error.message);
         }
     };
 
