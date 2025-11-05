@@ -23,7 +23,7 @@ const PaymentsPortalScreen = () => {
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${userInfo?.token}`,
         },
       };
 
@@ -51,7 +51,7 @@ const PaymentsPortalScreen = () => {
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${userInfo?.token}`,
         },
       };
 
@@ -71,7 +71,7 @@ const PaymentsPortalScreen = () => {
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${userInfo?.token}`,
         },
       };
 
@@ -118,7 +118,7 @@ const PaymentsPortalScreen = () => {
               {transactions.map((transaction) => (
                 <tr key={transaction._id}>
                   <td>{transaction._id}</td>
-                  <td>{transaction.user ? transaction.user.name : 'N/A'}</td>
+                  <td>{transaction.user?.name || 'N/A'}</td>
                   <td>{currencySymbols[transaction.currency] || transaction.currency} {transaction.amount}</td>
                   <td>{transaction.currency}</td>
                   <td>{transaction.payeeAccount}</td>

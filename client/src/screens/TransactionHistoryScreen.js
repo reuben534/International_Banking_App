@@ -22,7 +22,7 @@ const TransactionHistoryScreen = () => {
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${userInfo?.token}`,
         },
       };
 

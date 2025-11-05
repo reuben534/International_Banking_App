@@ -13,11 +13,11 @@ const useErrorHandler = (setError, setLoading, customMessageMap = {}, screenCont
         } else {
           displayMessage = 'An unexpected server error occurred. Please try again later.';
         }
-      } else if (err.response.data.errors) {
+      } else if (err.response?.data?.errors) {
         // Handle validation errors (array of errors)
         const errorMessages = err.response.data.errors.map(error => error.msg).join(', ');
         displayMessage = errorMessages;
-      } else if (err.response.data.message) {
+      } else if (err.response?.data?.message) {
         // Handle single message errors from backend
         const backendMessage = err.response.data.message;
         // Check if there's a custom message for this backend message in the map

@@ -7,7 +7,7 @@ const useSimpleErrorHandler = (setError, setLoading, customMessageMap = {}, scre
     if (err.response) {
       if (err.response.status === 500) { // Check for 500 status first
         displayMessage = 'An unexpected server error occurred. Please try again later.';
-      } else if (err.response.data.message) {
+      } else if (err.response?.data?.message) {
         const backendMessage = err.response.data.message;
         displayMessage = customMessageMap[backendMessage] || backendMessage;
       }
