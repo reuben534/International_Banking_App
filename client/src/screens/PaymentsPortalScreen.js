@@ -37,7 +37,7 @@ const PaymentsPortalScreen = () => {
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    if (!userInfo || userInfo.role !== 'employee') {
+    if (userInfo?.role !== 'employee') {
       navigate('/login'); // Redirect if not logged in as employee
     } else {
       fetchTransactions();
