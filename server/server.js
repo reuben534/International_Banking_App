@@ -23,10 +23,40 @@ const corsOptions = {
     origin: process.env.NODE_ENV === 'production' ? 'YOUR_PRODUCTION_URL' : 'http://localhost:3000',
 };
 app.use(cors(corsOptions));
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:"],
+            connectSrc: ["'self'"],
+            fontSrc: ["'self'"],
+            objectSrc: ["'none'"],
+            mediaSrc: ["'self'"],
+            frameSrc: ["'none'"],
+        },
+    },
+    hsts: {
+        maxAge: 31536000, // 1 year
+        includeSubDomains: true,
+        preload: true,
+    },
+    frameguard: {
+        action: 'deny',
+    },
+    xssFilter: true,
+    noSniff: true,
+}));
 app.use(express.json());
-app.use(mongoSanitize());
-app.use(hpp());
+app.use(mongoSanitize({
+    replaceWith: '_'
+}));
+app.use(hpp({
+    whitelist: [
+        // Add any query parameters that you want to allow multiple times
+    ]
+}));
 
 // Rate limiting for all API requests
 const apiLimiter = rateLimit({
