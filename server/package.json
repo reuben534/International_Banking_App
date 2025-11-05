@@ -8,7 +8,8 @@
     "start": "node server.js",
     "server": "nodemon server.js",
     "data:import": "node seeder/seed.js",
-    "data:destroy": "node seeder/seed.js -d"
+    "data:destroy": "node seeder/seed.js -d",
+    "sonar": "node_modules/sonarqube-scanner/bin/sonarqube-scanner"
   },
   "keywords": [],
   "author": "",
