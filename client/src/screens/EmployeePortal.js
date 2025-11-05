@@ -24,7 +24,7 @@ const EmployeePortal = () => {
                 },
             };
 
-            const { data } = await axios.post(
+            await axios.post(
                 '/api/employees',
                 { name, email, password },
                 config
