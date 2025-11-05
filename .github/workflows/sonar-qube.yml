@@ -13,7 +13,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
       - name: Install dependencies
         run: |
           npm install
@@ -22,9 +22,6 @@ jobs:
       - name: SonarQube Scan
         run: npm run sonar
         working-directory: ./server
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
   client-sonarqube:
     runs-on: ubuntu-latest
@@ -33,7 +30,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
       - name: Install dependencies
         run: |
           npm install
@@ -42,6 +39,3 @@ jobs:
       - name: SonarQube Scan
         run: npm run sonar
         working-directory: ./client
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
