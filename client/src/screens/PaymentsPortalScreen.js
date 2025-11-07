@@ -1,52 +1,35 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Button, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import useErrorHandler from '../hooks/useErrorHandler';
+import useTransactions from '../hooks/useTransactions';
 
 const paymentsPortalErrorMap = {
   'Transaction not found': 'The requested transaction could not be found.',
 };
 
 const PaymentsPortalScreen = () => {
-  const [transactions, setTransactions] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { transactions, loading, error, fetchTransactions, setTransactions, setLoading, setError } = useTransactions(
+    '/api/payments',
+    paymentsPortalErrorMap
+  );
   const [successMessage, setSuccessMessage] = useState(null);
 
-  const navigate = useNavigate();
-  const handleError = useErrorHandler(setError, setLoading, paymentsPortalErrorMap, '');
 
-  const fetchTransactions = useCallback(async () => {
-    setLoading(true);
-    try {
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-      const config = {
-        headers: {
-          Authorization: `Bearer ${userInfo?.token}`,
-        },
-      };
-
-      const { data } = await axios.get('/api/payments', config);
-      setTransactions(data);
-      setLoading(false);
-    } catch (err) {
-      handleError(err);
-    }
-  }, [handleError]);
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     if (userInfo?.role === 'employee') {
       fetchTransactions();
     } else {
-      navigate('/login'); // Redirect if not logged in as employee
+      navigate('/login');
     }
   }, [navigate, fetchTransactions]);
 
   const verifyHandler = async (id) => {
     setLoading(true);
-    setSuccessMessage(null); // Clear previous success messages
+    setSuccessMessage(null);
     try {
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
       const config = {
@@ -57,16 +40,15 @@ const PaymentsPortalScreen = () => {
 
       await axios.put(`/api/payments/${id}/verify`, {}, config);
       setSuccessMessage('Transaction verified successfully!');
-      fetchTransactions(); // Refresh transactions after update
-      setLoading(false);
+      fetchTransactions();
     } catch (err) {
-      handleError(err);
+      setError(err);
     }
   };
 
   const submitToSWIFTHandler = async (id) => {
     setLoading(true);
-    setSuccessMessage(null); // Clear previous success messages
+    setSuccessMessage(null);
     try {
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
       const config = {
@@ -77,10 +59,9 @@ const PaymentsPortalScreen = () => {
 
       await axios.put(`/api/payments/${id}/submit`, {}, config);
       setSuccessMessage('Transaction submitted to SWIFT successfully!');
-      fetchTransactions(); // Refresh transactions after update
-      setLoading(false);
+      fetchTransactions();
     } catch (err) {
-      handleError(err);
+      setError(err);
     }
   };
 

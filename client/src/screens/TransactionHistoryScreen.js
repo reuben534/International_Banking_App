@@ -1,45 +1,25 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { Table, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import useSimpleErrorHandler from '../hooks/useSimpleErrorHandler';
+import useTransactions from '../hooks/useTransactions';
 
 const transactionHistoryErrorMap = {
   'Transaction not found': 'Transaction history not available or transaction not found.',
 };
 
 const TransactionHistoryScreen = () => {
-  const [transactions, setTransactions] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
-  const handleError = useSimpleErrorHandler(setError, setLoading, transactionHistoryErrorMap, '');
-
-  const fetchTransactions = useCallback(async () => {
-    setLoading(true);
-    try {
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-      const config = {
-        headers: {
-          Authorization: `Bearer ${userInfo?.token}`,
-        },
-      };
-
-      const { data } = await axios.get('/api/payments/my', config);
-      setTransactions(data);
-      setLoading(false);
-    } catch (err) {
-      handleError(err);
-    }
-  }, [handleError]);
+  const { transactions, loading, error, fetchTransactions } = useTransactions(
+    '/api/payments/my',
+    transactionHistoryErrorMap
+  );
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     if (userInfo) {
       fetchTransactions();
     } else {
-      navigate('/login'); // Redirect if not logged in
+      navigate('/login');
     }
   }, [navigate, fetchTransactions]);
 
