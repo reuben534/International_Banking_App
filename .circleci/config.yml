@@ -1,29 +1,39 @@
 version: 2.1
 
-orbs:
-  node: circleci/node@5.0.2
-
 jobs:
   build_test_and_scan:
-    executor:
-      name: node/default
-      tag: "20.10"
+    machine:
+      image: ubuntu-2204:current
     steps:
       - checkout
       - run:
+          name: Install Node.js
+          command: |
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install 20.10
+            nvm use 20.10
+            echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
+            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
+            echo 'nvm use 20.10' >> $BASH_ENV
+      - run:
           name: Install Client Dependencies and Build
           command: |
+            source $BASH_ENV
             cd client
             npm install
             npm run build
       - run:
           name: Install Server Dependencies
           command: |
+            source $BASH_ENV
             cd server
             npm install
       - run:
           name: Run SonarQube Scan
           command: |
+            source $BASH_ENV
             npm install -g sonar-scanner
             sonar-scanner -Dsonar.login=$SONAR_TOKEN
 
