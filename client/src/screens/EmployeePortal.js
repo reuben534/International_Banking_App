@@ -15,12 +15,9 @@ const EmployeePortal = () => {
         setSuccess(false);
 
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-
             const config = {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${userInfo?.token}`,
                 },
             };
 

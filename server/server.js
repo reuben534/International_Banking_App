@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const hpp = require('hpp');
 const mongoSanitize = require('@exortek/express-mongo-sanitize');
+const cookieParser = require('cookie-parser');
 
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
@@ -18,9 +19,20 @@ connectDB();
 const app = express();
 app.set('trust proxy', 1);
 
+// Enforce HTTPS in production
+if (process.env.NODE_ENV === 'production') {
+    app.use((req, res, next) => {
+        if (req.headers['x-forwarded-proto'] !== 'https' && !req.secure) {
+            return res.redirect('https://' + req.headers.host + req.url);
+        }
+        next();
+    });
+}
+
 // In production, you should set this to your client's URL
 const corsOptions = {
     origin: process.env.NODE_ENV === 'production' ? 'YOUR_PRODUCTION_URL' : 'http://localhost:3000',
+    credentials: true,
 };
 app.use(cors(corsOptions));
 app.use(helmet({
@@ -49,6 +61,7 @@ app.use(helmet({
     noSniff: true,
 }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(mongoSanitize({
     replaceWith: '_'
 }));

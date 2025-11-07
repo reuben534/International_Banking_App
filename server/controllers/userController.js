@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const TokenBlocklist = require('../models/TokenBlocklist');
 const generateToken = require('../utils/generateToken');
 const { validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler');
@@ -6,47 +7,7 @@ const asyncHandler = require('express-async-handler');
 // @desc    Register a new user
 // @route   POST /api/users/register
 // @access  Public
-const registerUser = asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { name, idNumber, accountNumber, password, role } = req.body;
-
-    if (role && role === 'employee') {
-        res.status(400).json({ message: 'Employee registration is not allowed' });
-        return;
-    }
-
-    const userExists = await User.findOne({ idNumber });
-
-    if (userExists) {
-        res.status(400).json({ message: 'User already exists' });
-        return;
-    }
-
-    const user = await User.create({
-        name,
-        idNumber,
-        accountNumber,
-        password,
-        role,
-    });
-
-    if (user) {
-        res.status(201).json({
-            _id: user._id,
-            name: user.name,
-            idNumber: user.idNumber,
-            accountNumber: user.accountNumber,
-            role: user.role,
-            token: generateToken(user._id),
-        });
-    } else {
-        res.status(400).json({ message: 'Invalid user data' });
-    }
-});
+ 
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -62,17 +23,43 @@ const authUser = asyncHandler(async (req, res) => {
     const user = await User.findOne({ idNumber, accountNumber });
 
     if (user && (await user.matchPassword(password))) {
+        const token = generateToken(user._id);
+
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 60 * 60 * 1000, // 1 hour
+        });
+
         res.json({
             _id: user._id,
             name: user.name,
             idNumber: user.idNumber,
             accountNumber: user.accountNumber,
             role: user.role,
-            token: generateToken(user._id),
         });
     } else {
         res.status(401).json({ message: 'Invalid ID number, account number or password' });
     }
 });
 
-module.exports = { registerUser, authUser };
+// @desc    Logout user
+// @route   POST /api/users/logout
+// @access  Private
+const logoutUser = asyncHandler(async (req, res) => {
+    const { jti, exp } = req.user;
+
+    const token = new TokenBlocklist({
+        jti,
+        expiresAt: new Date(exp * 1000),
+    });
+
+    await token.save();
+
+    res.clearCookie('jwt');
+
+    res.json({ message: 'Logged out successfully' });
+});
+
+module.exports = { authUser, logoutUser };
