@@ -1,0 +1,110 @@
+# version: 2.1
+version: 2.1
+
+jobs:
+  # ================================
+  # Job de Build & Test
+  # ================================
+  build-and-test:
+    machine:
+      image: ubuntu-20.04:202201-02
+    steps:
+      - checkout
+
+      # Install Node.js
+      - run:
+          name: Install Node.js
+          command: |
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install 18.20
+            nvm use 18.20
+            echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
+            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
+            echo 'nvm use 18.20' >> $BASH_ENV
+
+      # Backend setup
+      - run:
+          name: Backend setup
+          command: |
+            cd backend
+            npm install
+            # Opcional: rodar testes com cobertura
+            # npm test -- --coverage
+
+      # Frontend setup
+      - run:
+          name: Frontend setup
+          command: |
+            cd frontend
+            npm ci
+            chmod +x node_modules/.bin/* || true
+            npm run build
+            # Opcional: rodar testes com cobertura
+            # npm test -- --coverage
+
+  # ================================
+  # Job de Análise SonarCloud
+  # ================================
+  sonar-analysis:
+    machine:
+      image: ubuntu-20.04:202201-02
+    steps:
+      - checkout
+      - run:
+          name: Install SonarScanner
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y openjdk-11-jre
+            wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
+            unzip sonar-scanner-cli-4.7.0.2747-linux.zip
+            echo 'export PATH="$PATH:$(pwd)/sonar-scanner-4.7.0.2747-linux/bin"' >> $BASH_ENV
+      - run:
+          name: Run SonarCloud Analysis
+          command: |
+            source $BASH_ENV
+            sonar-scanner \
+              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+              -Dsonar.organization=${SONAR_ORGANIZATION} \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.token=${SONAR_TOKEN}
+
+  # ================================
+  # Job de Análise de Segurança (ScoutSuite)
+  # ================================
+  scout-analysis:
+    machine:
+      image: ubuntu-20.04:202201-02
+    steps:
+      - checkout
+      - run:
+          name: Instalar ScoutSuite
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y python3-pip
+            pip3 install scoutsuite boto3
+      - run:
+          name: Rodar ScoutSuite
+          command: |
+            export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+            scout aws || true
+      - store_artifacts:
+          path: scoutsuite-report/report.html
+          destination: scoutsuite-report
+
+# ================================
+# Workflow Principal
+# ================================
+workflows:
+  main:
+    jobs:
+      - build-and-test
+      - sonar-analysis:
+          requires:
+            - build-and-test
+      - scout-analysis:
+          requires:
+            - build-and-test
