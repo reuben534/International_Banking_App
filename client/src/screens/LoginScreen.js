@@ -5,7 +5,7 @@ import axios from 'axios';
 import useErrorHandler from '../hooks/useErrorHandler';
 
 const loginErrorMap = {
-  'Invalid ID number, account number or password': 'Incorrect ID number, account number, or password. Please try again.',
+  'INVALID_CREDENTIALS': 'Incorrect ID number, account number, or password. Please try again.',
 };
 
 const LoginScreen = () => {
@@ -42,7 +42,7 @@ const LoginScreen = () => {
       newErrors.accountNumber = 'Account Number must be 10 digits';
     }
     if (!password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'This field is required';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
