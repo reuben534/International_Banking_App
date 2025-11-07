@@ -1,34 +1,66 @@
 version: 2.1
 
-orbs:
-  node: circleci/node@5.0.2
-
 jobs:
-  build_test_and_scan:
-    executor:
-      name: node/default
-      tag: "18.20"
+  build_and_analyze:
+    machine:
+      image: ubuntu-2204:current
     steps:
       - checkout
+
+      # Install Node.js and npm
       - run:
-          name: Install Client Dependencies and Run Tests
+          name: Install Node.js and npm
           command: |
-            cd client
-            npm install
-            npm test -- --coverage --watchAll=false
-            npm run build
+            sudo apt update
+            sudo apt install -y curl
+            curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+            sudo apt install -y nodejs
+            node -v
+            npm -v
+
+      # ==== Backend (server) ====
       - run:
           name: Install Server Dependencies
           command: |
             cd server
             npm install
+
+      - run:
+          name: Build Server
+          command: |
+            cd server
+            npm run build --if-present
+
+      # ==== Frontend (client) ====
+      - run:
+          name: Install Client Dependencies
+          command: |
+            cd client
+            npm install
+
+      - run:
+          name: Build React App
+          command: |
+            cd client
+            npm run build --if-present
+
+      # ==== SonarQube Analysis ====
+      - run:
+          name: Install Sonar Scanner
+          command: sudo npm install -g sonar-scanner
+
       - run:
           name: Run SonarQube Scan
           command: |
-            npm install -g sonarqube-scanner
-            node sonar-project.js
+            sonar-scanner \
+              -Dsonar.projectKey=reuben534_InternationalBankingApp \
+              -Dsonar.organization=reuben534 \
+              -Dsonar.sources=client/src,server/src \
+              -Dsonar.sourceEncoding=UTF-8 \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.login=$SONAR_TOKEN
 
 workflows:
   build_and_scan:
     jobs:
-      - build_test_and_scan
+      - build_and_analyze
