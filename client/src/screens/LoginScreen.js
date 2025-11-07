@@ -22,7 +22,7 @@ const LoginScreen = () => {
   useEffect(() => {
     const userInfo = localStorage.getItem('userInfo');
     if (userInfo) {
-      navigate('/'); // Redirect if already logged in
+      navigate('/'); 
     }
 
     if (error) {
