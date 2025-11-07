@@ -42,7 +42,7 @@ const LoginScreen = () => {
       newErrors.accountNumber = 'Account Number must be 10 digits';
     }
     if (!password) {
-      newErrors.password = 'password should be atleast 6 characters long';
+      newErrors.password = 'Field should be atleast 6 characters long';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
