@@ -7,7 +7,7 @@ jobs:
   build_and_analyze:
     executor:
       name: node/default
-      tag: "18"
+      tag: "18.20"
     steps:
       - checkout
 
