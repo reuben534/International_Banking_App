@@ -23,7 +23,7 @@ app.set('trust proxy', 1);
 if (process.env.NODE_ENV === 'production') {
     app.use((req, res, next) => {
         if (req.headers['x-forwarded-proto'] !== 'https' && !req.secure) {
-            return res.redirect('https://' + req.headers.host + req.url);
+            return res.status(403).send('Please use HTTPS when communicating with this server.');
         }
         next();
     });
