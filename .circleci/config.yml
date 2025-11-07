@@ -55,7 +55,7 @@ jobs:
           command: |
             echo "Running SonarCloud analysis..."
             sonar-scanner \
-              -Dsonar.projectKey=reuben534_InternationalBankingApp \
+              -Dsonar.projectKey=reuben534 \
               -Dsonar.organization=reuben534 \
               -Dsonar.sources=client/src,server \
               -Dsonar.sourceEncoding=UTF-8 \
