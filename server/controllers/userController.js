@@ -40,7 +40,7 @@ const authUser = asyncHandler(async (req, res) => {
             role: user.role,
         });
     } else {
-        res.status(401).json({ message: 'Invalid ID number, account number or password' });
+        res.status(401).json({ message: 'INVALID_CREDENTIALS' });
     }
 });
 
