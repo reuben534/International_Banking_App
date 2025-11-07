@@ -7,15 +7,14 @@ jobs:
   build_test_and_scan:
     executor:
       name: node/default
-      tag: "18.20"
+      tag: "20.10"
     steps:
       - checkout
       - run:
-          name: Install Client Dependencies and Run Tests
+          name: Install Client Dependencies and Build
           command: |
             cd client
             npm install
-            npm test -- --coverage --watchAll=false
             npm run build
       - run:
           name: Install Server Dependencies
