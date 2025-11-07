@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Col, Container, Card } from 'react-bootstrap';
-import {  useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useErrorHandler from '../hooks/useErrorHandler';
 
@@ -14,53 +14,44 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  const [idNumberError, setIdNumberError] = useState('');
-  const [accountNumberError, setAccountNumberError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+  const [errors, setErrors] = useState({});
 
   const navigate = useNavigate();
   const handleError = useErrorHandler(setError, setLoading, loginErrorMap, 'login');
-
-  const validateIdNumber = (idNumber) => {
-    if (/^\d{13}$/.test(idNumber)) {
-      setIdNumberError('');
-    } else {
-      setIdNumberError('ID Number must be 13 digits');
-    }
-  };
-
-  const validateAccountNumber = (accountNumber) => {
-    if (/^\d{10}$/.test(accountNumber)) {
-      setAccountNumberError('');
-    } else {
-      setAccountNumberError('Account Number must be 10 digits');
-    }
-  };
-
-  const validatePassword = (password) => {
-    if (password) {
-      setPasswordError('');
-    } else {
-      setPasswordError('Password is required');
-    }
-  };
 
   useEffect(() => {
     const userInfo = localStorage.getItem('userInfo');
     if (userInfo) {
       navigate('/'); // Redirect if already logged in
     }
-  }, [navigate]);
+
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [navigate, error]);
+
+  const validate = () => {
+    const newErrors = {};
+    if (!/^\d{13}$/.test(idNumber)) {
+      newErrors.idNumber = 'ID Number must be 13 digits';
+    }
+    if (!/^\d{10}$/.test(accountNumber)) {
+      newErrors.accountNumber = 'Account Number must be 10 digits';
+    }
+    if (!password) {
+      newErrors.password = 'Password is required';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    validateIdNumber(idNumber);
-    validateAccountNumber(accountNumber);
-    validatePassword(password);
-
-    if (idNumberError || accountNumberError || passwordError) {
+    if (!validate()) {
       return;
     }
 
@@ -102,14 +93,12 @@ const LoginScreen = () => {
                     type='text'
                     placeholder='Enter ID number'
                     value={idNumber}
-                    onChange={(e) => {
-                      setIdNumber(e.target.value);
-                      validateIdNumber(e.target.value);
-                    }}
-                    isInvalid={!!idNumberError}
+                    onChange={(e) => setIdNumber(e.target.value)}
+                    onBlur={validate}
+                    isInvalid={!!errors.idNumber}
                   ></Form.Control>
                   <Form.Control.Feedback type='invalid'>
-                    {idNumberError}
+                    {errors.idNumber}
                   </Form.Control.Feedback>
                 </Form.Group>
 
@@ -119,14 +108,12 @@ const LoginScreen = () => {
                     type='text'
                     placeholder='Enter account number'
                     value={accountNumber}
-                    onChange={(e) => {
-                      setAccountNumber(e.target.value);
-                      validateAccountNumber(e.target.value);
-                    }}
-                    isInvalid={!!accountNumberError}
+                    onChange={(e) => setAccountNumber(e.target.value)}
+                    onBlur={validate}
+                    isInvalid={!!errors.accountNumber}
                   ></Form.Control>
                   <Form.Control.Feedback type='invalid'>
-                    {accountNumberError}
+                    {errors.accountNumber}
                   </Form.Control.Feedback>
                 </Form.Group>
 
@@ -136,18 +123,16 @@ const LoginScreen = () => {
                     type='password'
                     placeholder='Enter password'
                     value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      validatePassword(e.target.value);
-                    }}
-                    isInvalid={!!passwordError}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onBlur={validate}
+                    isInvalid={!!errors.password}
                   ></Form.Control>
                   <Form.Control.Feedback type='invalid'>
-                    {passwordError}
+                    {errors.password}
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Button type='submit' variant='primary' className='my-3' disabled={loading || !!idNumberError || !!accountNumberError || !!passwordError}>
+                <Button type='submit' variant='primary' className='my-3' disabled={loading || Object.keys(errors).length > 0}>
                   Sign In
                 </Button>
               </Form>
