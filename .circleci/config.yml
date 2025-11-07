@@ -4,55 +4,31 @@ orbs:
   node: circleci/node@5.0.2
 
 jobs:
-  build_and_test_client:
-    executor:
-      name: node/default
-      tag: "18.20"
-    working_directory: ~/project/client
-    steps:
-      - checkout: # checkout the repo into the ~/project directory
-          path: ~/project
-      - run:
-          name: Install Client Dependencies
-          command: npm install
-      - run:
-          name: Run Client Tests
-          command: npm test -- --coverage --watchAll=false
-      - run:
-          name: Build Client
-          command: npm run build
-
-  build_and_test_server:
-    executor:
-      name: node/default
-      tag: "18.20"
-    working_directory: ~/project/server
-    steps:
-      - checkout:
-          path: ~/project
-      - run:
-          name: Install Server Dependencies
-          command: npm install
-
-  sonar-analysis:
+  build_test_and_scan:
     executor:
       name: node/default
       tag: "18.20"
     steps:
       - checkout
       - run:
-          name: Install SonarQube Scanner
-          command: npm install -g sonarqube-scanner
+          name: Install Client Dependencies and Run Tests
+          command: |
+            cd client
+            npm install
+            npm test -- --coverage --watchAll=false
+            npm run build
+      - run:
+          name: Install Server Dependencies
+          command: |
+            cd server
+            npm install
       - run:
           name: Run SonarQube Scan
-          command: node sonar-project.js
+          command: |
+            npm install -g sonarqube-scanner
+            node sonar-project.js
 
 workflows:
-  build_test_and_scan:
+  build_and_scan:
     jobs:
-      - build_and_test_client
-      - build_and_test_server
-      - sonar-analysis:
-          requires:
-            - build_and_test_client
-            - build_and_test_server
+      - build_test_and_scan
