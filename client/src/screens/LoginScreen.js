@@ -42,7 +42,7 @@ const LoginScreen = () => {
       newErrors.accountNumber = 'Account Number must be 10 digits';
     }
     if (!password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Field cannot be empty';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
