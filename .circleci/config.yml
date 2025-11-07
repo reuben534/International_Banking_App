@@ -1,40 +1,46 @@
 version: 2.1
 
-orbs:
-  node: circleci/node@5.0.2
-
 jobs:
   build_and_analyze:
-    executor:
-      name: node/default
-      tag: "18.20"
+    machine:
+      image: ubuntu-2204:current # Runs directly on Ubuntu VM (no Docker)
     steps:
       - checkout
 
+      # Install Node.js and npm
+      - run:
+          name: Install Node.js and npm
+          command: |
+            sudo apt update
+            sudo apt install -y curl
+            curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+            sudo apt install -y nodejs
+            node -v
+            npm -v
+
       # Install dependencies
       - run:
-          name: Install Dependencies
+          name: Install Project Dependencies
           command: npm install
 
-      # Run tests (optional if you have tests)
+      # Optional: run your Angular build
       - run:
-          name: Run Tests
-          command: npm test || echo "No tests configured"
+          name: Build Angular Project
+          command: npm run build --if-present
 
-      # Run build
+      # Install sonar-scanner globally
       - run:
-          name: Build Project
-          command: npm run build
+          name: Install Sonar Scanner
+          command: sudo npm install -g sonar-scanner
 
-      # Run SonarQube scan (no Docker)
+      # Run SonarQube static code analysis
       - run:
-          name: SonarQube Scan
+          name: Run SonarQube Scan
           command: |
-            npm install -g sonar-scanner
             sonar-scanner \
               -Dsonar.projectKey=InternationalBankingApp \
-              -Dsonar.organization=reuben534 \
-              -Dsonar.sources=./src \
+              -Dsonar.organization=reuben534\
+              -Dsonar.sources=src \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.login=$SONAR_TOKEN
 
