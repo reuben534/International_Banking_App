@@ -1,50 +1,58 @@
 version: 2.1
 
+orbs:
+  node: circleci/node@5.0.2
+
 jobs:
-  build_and_analyze:
-    machine:
-      image: ubuntu-2204:current # Runs directly on Ubuntu VM (no Docker)
+  build_and_test_client:
+    executor:
+      name: node/default
+      tag: "18.20"
+    working_directory: ~/project/client
     steps:
-      - checkout
-
-      # Install Node.js and npm
+      - checkout: # checkout the repo into the ~/project directory
+          path: ~/project
       - run:
-          name: Install Node.js and npm
-          command: |
-            sudo apt update
-            sudo apt install -y curl
-            curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-            sudo apt install -y nodejs
-            node -v
-            npm -v
-
-      # Install dependencies
+          name: Install Client Dependencies
+          command: npm install
       - run:
-          name: Install Project Dependencies
+          name: Run Client Tests
+          command: npm test -- --coverage --watchAll=false
+      - run:
+          name: Build Client
+          command: npm run build
+
+  build_and_test_server:
+    executor:
+      name: node/default
+      tag: "18.20"
+    working_directory: ~/project/server
+    steps:
+      - checkout:
+          path: ~/project
+      - run:
+          name: Install Server Dependencies
           command: npm install
 
-      # Optional: run your Angular build
+  sonar-analysis:
+    executor:
+      name: node/default
+      tag: "18.20"
+    steps:
+      - checkout
       - run:
-          name: Build Angular Project
-          command: npm run build --if-present
-
-      # Install sonar-scanner globally
-      - run:
-          name: Install Sonar Scanner
-          command: sudo npm install -g sonar-scanner
-
-      # Run SonarQube static code analysis
+          name: Install SonarQube Scanner
+          command: npm install -g sonarqube-scanner
       - run:
           name: Run SonarQube Scan
-          command: |
-            sonar-scanner \
-              -Dsonar.projectKey=InternationalBankingApp \
-              -Dsonar.organization=reuben534\
-              -Dsonar.sources=src \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=$SONAR_TOKEN
+          command: node sonar-project.js
 
 workflows:
-  build_and_scan:
+  build_test_and_scan:
     jobs:
-      - build_and_analyze
+      - build_and_test_client
+      - build_and_test_server
+      - sonar-analysis:
+          requires:
+            - build_and_test_client
+            - build_and_test_server
