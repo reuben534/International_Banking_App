@@ -10,7 +10,7 @@ const paymentsPortalErrorMap = {
 
 const PaymentsPortalScreen = () => {
   const navigate = useNavigate();
-  const { transactions, loading, error, fetchTransactions, setTransactions, setLoading, setError } = useTransactions(
+  const { transactions, loading, error, fetchTransactions, setLoading, setError } = useTransactions(
     '/api/payments',
     paymentsPortalErrorMap
   );
